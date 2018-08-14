@@ -5,6 +5,7 @@ sys.path.append('../')
 from utils import tfutil as t
 
 
+SEED = 1337
 tf.set_random_seed(SEED)
 
 
