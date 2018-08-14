@@ -1,0 +1,7 @@
+tensorflow-gpu
+numpy
+scipy
+opencv-python
+pillow
+h5py
+tqdm
