@@ -52,21 +52,20 @@ def load_cgan_model(verbose=True):
                 print("[+] global step : %d" % saved_global_step, " successfully loaded")
 
             is_model_loaded = True
-            return True
         else:
             if verbose:
                 print('[-] No checkpoint file found :( pre-trained model is needed!')
 
             is_model_loaded = False
-            return False
-    else:
-        return True
 
 
 def gen_cgan_image(input_label=0):
+    global is_model_loaded
     global tf_sess, cgan_model
 
-    if load_cgan_model():
+    if not is_model_loaded:
+        load_cgan_model()
+    else:
         num_label = np.eye(10)[input_label]
 
         # Training G model with sample image and noise
