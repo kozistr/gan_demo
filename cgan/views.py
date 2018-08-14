@@ -9,9 +9,10 @@ CGAN_PAGE = 'cgan/cgan.html'
 def gan_load(req):
     wanna_label = 1  # will be replaced with custom input
 
-    CGANInference(input_label=wanna_label)
-
-    return render(req, CGAN_PAGE, {})
+    if CGANInference(input_label=wanna_label).success:
+        return render(req, CGAN_PAGE, {})
+    else:
+        return HttpResponse('<h1> CGAN Generation Failed... </h1>')
 
 
 def about(req):
