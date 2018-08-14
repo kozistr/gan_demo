@@ -9,7 +9,8 @@ CGAN_PAGE = 'cgan/cgan.html'
 def gan_load(req):
     wanna_label = 1  # will be replaced with custom input
 
-    gen_cgan_image(wanna_label)
+    CGANInference(input_label=wanna_label)
+
     return render(req, CGAN_PAGE, {})
 
 
