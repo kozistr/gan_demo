@@ -24,49 +24,49 @@ tf_sess = None
 cgan_model = None
 
 
-def load_cgan_model(verbose=True):
-    global is_model_loaded
-    global tf_sess, cgan_model
+class CGANInference(models.Model):
 
-    if not is_model_loaded:
-        # GPU configure
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
+    @staticmethod
+    def load_model(verbose=True):
+        global is_model_loaded
+        global tf_sess, cgan_model
 
-        tf_sess = tf.Session(config=config)
-        cgan_model = cg.CGAN(tf_sess)  # CGAN Model
-        if verbose:
-            print("[+] CGAN Model loaded!")
+        if not is_model_loaded:
+            # GPU configure
+            config = tf.ConfigProto()
+            config.gpu_options.allow_growth = True
 
-        # initializing
-        tf_sess.run(tf.global_variables_initializer())
-
-        # Load model & Graph & Weights
-        ckpt = tf.train.get_checkpoint_state(dirs['model_path'])
-        if ckpt and ckpt.model_checkpoint_path:
-            # Restores from checkpoint
-            cgan_model.saver.restore(tf_sess, ckpt.model_checkpoint_path)
-
-            saved_global_step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])
+            tf_sess = tf.Session(config=config)
+            cgan_model = cg.CGAN(tf_sess)  # CGAN Model
             if verbose:
-                print("[+] global step : %d" % saved_global_step, " successfully loaded")
+                print("[+] CGAN Model loaded!")
 
-            is_model_loaded = True
-        else:
-            if verbose:
-                print('[-] No checkpoint file found :( pre-trained model is needed!')
+            # initializing
+            tf_sess.run(tf.global_variables_initializer())
 
-            is_model_loaded = False
+            # Load model & Graph & Weights
+            ckpt = tf.train.get_checkpoint_state(dirs['model_path'])
+            if ckpt and ckpt.model_checkpoint_path:
+                # Restores from checkpoint
+                cgan_model.saver.restore(tf_sess, ckpt.model_checkpoint_path)
 
+                saved_global_step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])
+                if verbose:
+                    print("[+] global step : %d" % saved_global_step, " successfully loaded")
 
-def gen_cgan_image(input_label=0, verbose=True):
-    global is_model_loaded
-    global tf_sess, cgan_model
+                is_model_loaded = True
+            else:
+                if verbose:
+                    print('[-] No checkpoint file found :( pre-trained model is needed!')
 
-    if not is_model_loaded:
-        load_cgan_model()
-    else:
-        num_label = np.eye(10)[input_label]
+                is_model_loaded = False
+
+    @staticmethod
+    def gen_image(input_label=1, verbose=True):
+        global is_model_loaded
+        global tf_sess, cgan_model
+
+        num_label = np.eye(10)[input_label]  # one-hot encoding
 
         # Training G model with sample image and noise
         sample_z = np.random.uniform(-1., 1., [1, cgan_model.z_dim]).astype(np.float32)
@@ -92,3 +92,7 @@ def gen_cgan_image(input_label=0, verbose=True):
                        image_path=sample_dir)
         if verbose:
             print("[*] generated image (%d) is saved" % input_label)
+
+    load_model()  # Loading CGAN Model
+    if is_model_loaded:
+        gen_image(2)
