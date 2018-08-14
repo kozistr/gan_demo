@@ -3,6 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^about/$', view=None, name='about'),
-    url(r'^demo/$', view=None ,name='demo'),
+    url(r'^about/$', view=views.about, name='about'),
+    url(r'^demo/$', view=views.gen_cgan_image, name='demo'),
 ]
