@@ -1,0 +1,2 @@
+model_checkpoint_path: "CGAN-model.ckpt-200000"
+all_model_checkpoint_paths: "CGAN-model.ckpt-200000"
