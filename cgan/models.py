@@ -24,7 +24,7 @@ tf_sess = None
 cgan_model = None
 
 
-def load_cgan_model():
+def load_cgan_model(verbose=True):
     global is_model_loaded
     global tf_sess, cgan_model
 
@@ -35,6 +35,8 @@ def load_cgan_model():
 
         tf_sess = tf.Session(config=config)
         cgan_model = cg.CGAN(tf_sess)  # CGAN Model
+        if verbose:
+            print("[+] CGAN Model loaded!")
 
         # initializing
         tf_sess.run(tf.global_variables_initializer())
@@ -46,12 +48,14 @@ def load_cgan_model():
             cgan_model.saver.restore(tf_sess, ckpt.model_checkpoint_path)
 
             saved_global_step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])
-            print("[+] global step : %d" % saved_global_step, " successfully loaded")
+            if verbose:
+                print("[+] global step : %d" % saved_global_step, " successfully loaded")
 
             is_model_loaded = True
             return True
         else:
-            print('[-] No checkpoint file found :( pre-trained model is needed!')
+            if verbose:
+                print('[-] No checkpoint file found :( pre-trained model is needed!')
 
             is_model_loaded = False
             return False
@@ -85,6 +89,3 @@ def gen_cgan_image(input_label=0):
         iu.save_images(samples,
                        size=[sample_image_height, sample_image_width],
                        image_path=sample_dir)
-        return True
-    else:
-        return False
