@@ -1,5 +1,6 @@
 from django.db import models
 from . import cgan as cg
+from time import time
 
 import tensorflow as tf
 import numpy as np
@@ -24,7 +25,7 @@ tf_sess = None
 cgan_model = None
 
 
-class CGANInference(models.Model):
+class CGANInference:
 
     @staticmethod
     def load_model(verbose=True):
@@ -93,6 +94,22 @@ class CGANInference(models.Model):
         if verbose:
             print("[*] generated image (%d) is saved" % input_label)
 
-    load_model()  # Loading CGAN Model
-    if is_model_loaded:
-        gen_image(2)
+    def __init__(self, input_label=0, verbose=True):
+        self.success = False
+        self.verbose = verbose
+
+        self.load_model(verbose=self.verbose)  # Loading CGAN Model
+        if is_model_loaded:
+            self.start_time = time()
+            self.gen_image(input_label, verbose=self.verbose)
+            self.end_time = time()
+
+            if self.verbose:
+                print("[*] Total {.4f}s is taken".format(self.end_time - self.start_time))
+
+            self.success = True
+        else:
+            self.success = False
+
+    def __str__(self):
+        return "CGAN Model"
